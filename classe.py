@@ -458,7 +458,7 @@ for i_bus in range(Lc.nbre):
 # =============================================================================
 # Teste
 # =============================================================================
-#reseau=Sibra(dico_arret['GARE'])
-#noeud=recuperation(dico_arret)
-#reseau.affichage_resultat(dico_arret['Ponchy'],dt.timedelta(seconds=55260),0,noeud)
+# reseau=Sibra(dico_arret['GARE'])
+# noeud=recuperation(dico_arret)
+# reseau.affichage_resultat(dico_arret['Ponchy'],dt.timedelta(seconds=55260),0,noeud)
 # fore=reseau.Foremost(dico_arret['Ponchy'],dt.timedelta(seconds=55260),0,noeud)
