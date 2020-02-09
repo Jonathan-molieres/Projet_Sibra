@@ -86,7 +86,7 @@ class Arret:
 
         Returns
         -------
-        TYPE
+        TYPE: Datetime
             DESCRIPTION.
         Utilisation:renvoie l'horaire selon l'indice i"""
         return heure_arret[i_bus][i]
@@ -94,8 +94,8 @@ class Arret:
         '''
         Parameters
         ----------
-        heure_utilisateur : TYPE
-            DESCRIPTION.
+        heure_utilisateur : TYPE: datetime
+            DESCRIPTION: heure de depart de l'utilisateur
         num_heur : TYPE
             DESCRIPTION.
         i_bus : TYPE
@@ -116,6 +116,22 @@ class Arret:
             #renvoie l'infini si aucun horraire est trouvé
             return dt.timedelta(seconds=86000)
     def temps_precedent(self,heure_utilisateur,num_heur,i_bus):
+        '''
+        Parameters
+        ----------
+        heure_utilisateur : TYPE: datetime
+            DESCRIPTION: heure de depart de l'utilisateur
+        num_heur : TYPE
+            DESCRIPTION.
+        i_bus : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        Utilisation:renvoie le temps entre deux arrets qui se suivent'''
         try:
             temps_arret=self.horaire(heure_utilisateur,self.choix_heur(num_heur),i_bus)
             temps_precedent=self.precedent[i_bus].horaire_element(self.suivant[i_bus].choix_heur(num_heur),i_bus,temps_arret[1]-1)
@@ -157,10 +173,11 @@ class Sibra:
             Arret d'arrivé.
         heure_utilisateur : TYPE: datetime
             DESCRIPTION: heure de depart de l'utilisateur
-        nom_bus : TYPE:Liste
-            Liste des nom de bus .
+
         num_heur : TYPE: int
-            permet de determiner quelle horraire choisir.
+            DESCRIPTION: Permet de determiner quelle horraire choisir.
+        queue : TYPE:Liste 
+            DESCRIPTION: Liste des arrets
 
         Returns
         -------
@@ -215,18 +232,18 @@ class Sibra:
         ----------
         distances : TYPE: dict
             DESCRIPTION: contient les distances pour l'algorithme de dijkstra
-        queue : TYPE
-            DESCRIPTION.
+        queue : TYPE : Liste
+            DESCRIPTION: Liste des noeuds
 
         Returns
         -------
-        noeud_mini : TYPE
-            DESCRIPTION.
-        mini : TYPE
-            DESCRIPTION.
+        noeud_mini : arret
+            DESCRIPTION: noeud avec la distances minimum
+        mini : TYPE: datetime
+            DESCRIPTION: distances minimum
 
-        """
-        '''retourne le noeud de distance minimal'''
+        retourne le noeud de distance minimal"""
+        
         inf=dt.timedelta(seconds=86000)
         noeud_mini=-1
         mini=inf
@@ -238,16 +255,14 @@ class Sibra:
 
     def retour_chemin(self,distances,cible,inf):
         """
-        
-
         Parameters
         ----------
         distances : TYPE: dict
             DESCRIPTION: contient les distances pour l'algorithme de dijkstra
-        cible : TYPE
-            DESCRIPTION.
-        inf : TYPE
-            DESCRIPTION.
+        cible : TYPE : arret
+            DESCRIPTION: arret final
+        inf : TYPE: datetime
+            DESCRIPTION: defini l'infini pour l'algorithme de dijkstra
 
         Returns
         -------
@@ -275,16 +290,14 @@ class Sibra:
         return path,bus_visite
     def retour_chemin2(self,distances,cible,inf):
         """
-        
-
         Parameters
         ----------
         distances : TYPE: dict
             DESCRIPTION: contient les distances pour l'algorithme de dijkstra
-        cible : TYPE
-            DESCRIPTION.
-        inf : TYPE
-            DESCRIPTION.
+        cible : TYPE : arret
+            DESCRIPTION: arret final
+        inf : TYPE: datetime
+            DESCRIPTION: defini l'infini pour l'algorithme de dijkstra
 
         Returns
         -------
@@ -312,23 +325,20 @@ class Sibra:
         return path,bus_visite
     def affichage_resultat(self,cible,heure_utilisateur,num_heur,queue):
         """
-        
-
         Parameters
         ----------
-        cible : TYPE
-            DESCRIPTION.
-        heure_utilisateur : TYPE
-            DESCRIPTION.
-        num_heur : TYPE
-            DESCRIPTION.
-        queue : TYPE
-            DESCRIPTION.
+        cible : TYPE : arret
+            DESCRIPTION: arret final
+        heure_utilisateur : TYPE: datetime
+            DESCRIPTION: heure de depart de l'utilisateur
+        num_heur : TYPE: int
+            DESCRIPTION: Permet de determiner quelle horraire choisir.
+        queue : TYPE:Liste 
+            DESCRIPTION: Liste des arrets
 
         Returns
         -------
-        None: fonction d'affichage pour dijkstra'
-
+        None: fonction d'affichage pour dijkstra
         """
         affichage='============================================================================= \n'
         affichage+='Vous avez demandé le chemin le plus court entre : '+str(self.depart.nom)
@@ -337,8 +347,9 @@ class Sibra:
         affichage+='\nVous devez prendre les arrets suivants : \n'
         for i in range(len(resultat[0])):
             affichage+= resultat[0][i]+' avec le bus '+str(resultat[2][i])+str(", \n")
-        affichage+="\nLa durée du trajet estimée est de : "
+        affichage+="\nLa durée du trajet estimée est de :"
         print(affichage,resultat[1])
+        print("avec le temps d'attente de correspondances pris en compte.")
         print("L'heure de depart est : ",heure_utilisateur)
         print("L'heure d'arrivée estimée est :",heure_utilisateur+resultat[1])
         print('============================================================================= \n')
@@ -358,8 +369,7 @@ def test(dico_arret):
 
     Returns
     -------
-    None: c'est une fonction d'affichage
-
+    None: C'est une fonction d'affichage.
     '''
     print('Verification du graph')
     for arret in dico_arret:
@@ -377,6 +387,19 @@ def test(dico_arret):
             else:
                 print('terminus')
 def recuperation(dico_arret):
+    '''
+    Parameters
+    ----------
+    dico_arret : TYPE: Dict
+        DESCRIPTION: Contient tout les arrets avec comme clé 
+        le nom de l'arret
+
+    Returns
+    -------
+    noeud : TYPE: Liste
+        DESCRIPTION: Liste de tout les arrets
+
+    '''
     noeud=[]
     for i in dico_arret.values():
         noeud.append(i)
@@ -435,33 +458,7 @@ for i_bus in range(Lc.nbre):
 # =============================================================================
 # Teste
 # =============================================================================
-reseau=Sibra(dico_arret['C.E.S._Barattes'])
+reseau=Sibra(dico_arret['GARE'])
 noeud=recuperation(dico_arret)
-reseau.affichage_resultat(dico_arret['Place_des_Romains'],dt.timedelta(seconds=55260),0,noeud)
+reseau.affichage_resultat(dico_arret['Ponchy'],dt.timedelta(seconds=55260),0,noeud)
 # fore=reseau.Foremost(dico_arret['Ponchy'],dt.timedelta(seconds=55260),0,noeud)
-'''
-[['LYCEE_DE_POISY',
-  'POISY_COLLEGE',
-  'Vernod',
-  'Meythet_Le_Rabelais',
-  'Chorus',
-  'Mandallaz',
-  'GARE',
-  'France_Barattes',
-  'C.E.S._Barattes',
-  'VIGNIERES',
-  'Ponchy',
-  'PARC_DES_GLAISINS'],
- ['PISCINE_PATINOIRE',
-  'Arcadium',
-  'Parc_des_Sports',
-  'Place_des_Romains',
-  'Courier',
-  'GARE',
-  'Bonlieu',
-  'Préfecture_Pâquier',
-  'Impérial',
-  'Pommaries',
-  'VIGNIERES',
-  'CAMPUS']]
-'''
